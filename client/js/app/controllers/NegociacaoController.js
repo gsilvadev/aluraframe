@@ -2,16 +2,16 @@ class NegociacaoController{
 
     constructor(){
         let $ = document.querySelector.bind(document);
-        this.inputData = $("#data");
-        this.inputQuantidade = $("#quantidade");
-        this.inputValor = $("#valor");
+        this._inputData = $("#data");
+        this._inputQuantidade = $("#quantidade");
+        this._inputValor = $("#valor");
 
-        this.listaLegociacoes = new Bind(
+        this._listaLegociacoes = new Bind(
             new ListaNegociacoes(), 
             new NegociacoesView($("#negociacoesView")),
             "adiciona", "esvazia");
 
-        this.mensagem = new Bind(
+        this._mensagem = new Bind(
             new Mensagem(),
             new MensagemView($("#mensagemView")),
             "texto");
@@ -20,29 +20,29 @@ class NegociacaoController{
     adiciona(event){
         event.preventDefault();
 
-        this.listaLegociacoes.adiciona(this._criaNegociacao());
-        this.mensagem.texto = "Negociação adicionada com sucesso!";
+        this._listaLegociacoes.adiciona(this._criaNegociacao());
+        this._mensagem.texto = "Negociação adicionada com sucesso!";
 
         this._limpaFormulario();
-        this.inputData.focus();
+        this._inputData.focus();
     }
 
     apaga(event){
         event.preventDefault();
 
-        this.listaLegociacoes.esvazia();
-        this.mensagem.texto = "Negociações apagadas com sucesso!";
+        this._listaLegociacoes.esvazia();
+        this._mensagem.texto = "Negociações apagadas com sucesso!";
     }
 
     _criaNegociacao(){
-        return new Negociacao(DataHelper.textoParaData(this.inputData.value),
-                                        this.inputQuantidade.value,
-                                        this.inputValor.value);
+        return new Negociacao(DataHelper.textoParaData(this._inputData.value),
+                                        this._inputQuantidade.value,
+                                        this._inputValor.value);
     }
 
     _limpaFormulario(){
-        this.inputData.value = "";
-        this.inputQuantidade.value = "1";
-        this.inputValor.value = "0.0";
+        this._inputData.value = "";
+        this._inputQuantidade.value = "1";
+        this._inputValor.value = "0.0";
     }
 }
