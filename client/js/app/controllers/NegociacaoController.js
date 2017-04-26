@@ -27,6 +27,19 @@ class NegociacaoController{
         this._inputData.focus();
     }
 
+    obterNegociacoes(){
+        let negociacaoService = new NegociacaoService();
+        negociacaoService.obterNegociacoesSemanais((erro, negociacoes) => {
+            if(erro){
+                this._mensagem.texto = erro;
+                return;
+            }
+
+            negociacoes.forEach(negociacao => this._listaLegociacoes.adiciona(negociacao));
+            this._mensagem.texto = "Negociações obtidas com êxito.";
+        });
+    }
+
     apaga(event){
         event.preventDefault();
 
