@@ -1,13 +1,13 @@
-class NegociacaoController{
+class NegociacaoController {
 
-    constructor(){
+    constructor() {
         let $ = document.querySelector.bind(document);
         this._inputData = $("#data");
         this._inputQuantidade = $("#quantidade");
         this._inputValor = $("#valor");
 
         this._listaLegociacoes = new Bind(
-            new ListaNegociacoes(), 
+            new ListaNegociacoes(),
             new NegociacoesView($("#negociacoesView")),
             "adiciona", "esvazia");
 
@@ -17,7 +17,7 @@ class NegociacaoController{
             "texto");
     }
 
-    adiciona(event){
+    adiciona(event) {
         event.preventDefault();
 
         this._listaLegociacoes.adiciona(this._criaNegociacao());
@@ -27,33 +27,33 @@ class NegociacaoController{
         this._inputData.focus();
     }
 
-    obterNegociacoes(){
+    obterNegociacoes() {
         let negociacaoService = new NegociacaoService();
-        negociacaoService.obterNegociacoesSemanais((erro, negociacoes) => {
-            if(erro){
-                this._mensagem.texto = erro;
-                return;
-            }
-
-            negociacoes.forEach(negociacao => this._listaLegociacoes.adiciona(negociacao));
-            this._mensagem.texto = "Negociações obtidas com êxito.";
-        });
+        Promise.all([
+            negociacaoService.obterNegociacoesDaSemana(),
+            negociacaoService.obterNegociacoesDaSemanaAnterior(),
+            negociacaoService.obterNegociacoesDaSemanaRetrasada()])
+            .then(negociacoes =>
+                negociacoes
+                    .reduce((novoArray, array) => novoArray.concat(array), [])
+                    .forEach(negociacao => this._listaLegociacoes.adiciona(negociacao)))
+            .catch(erro => this._mensagem.texto = erro);
     }
 
-    apaga(event){
+    apaga(event) {
         event.preventDefault();
 
         this._listaLegociacoes.esvazia();
         this._mensagem.texto = "Negociações apagadas com sucesso!";
     }
 
-    _criaNegociacao(){
+    _criaNegociacao() {
         return new Negociacao(DataHelper.textoParaData(this._inputData.value),
-                                        this._inputQuantidade.value,
-                                        this._inputValor.value);
+            this._inputQuantidade.value,
+            this._inputValor.value);
     }
 
-    _limpaFormulario(){
+    _limpaFormulario() {
         this._inputData.value = "";
         this._inputQuantidade.value = "1";
         this._inputValor.value = "0.0";
