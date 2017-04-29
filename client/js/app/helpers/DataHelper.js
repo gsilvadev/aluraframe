@@ -5,7 +5,8 @@ class DataHelper{
     }
 
     static textoParaData(texto){
-        if(!/\d{4}([-\/])\d{1,2}\1\d{1,2}/.test(texto))
+        if(!/\d{4}([-\/])\d{1,2}\1\d{1,2}/.test(texto) &&
+            !/\d{1,2}([-\/])\d{1,2}\1\d{4}/.test(texto))
             throw new Error("Verificar formato da data.");
         return new Date(...texto.split(/[-\/]/).map((item, indice) => item - (indice % 2)));
     }
