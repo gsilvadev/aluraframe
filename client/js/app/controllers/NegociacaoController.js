@@ -41,14 +41,14 @@ class NegociacaoController {
 
     obterNegociacoes() {
         let negociacaoService = new NegociacaoService();
-        Promise.all([
-            negociacaoService.obterNegociacoesDaSemana(),
-            negociacaoService.obterNegociacoesDaSemanaAnterior(),
-            negociacaoService.obterNegociacoesDaSemanaRetrasada()])
+            negociacaoService.obterNegociacoes()
+            .then(negociacoes => 
+                            negociacoes.filter(negociacao => 
+                                !this._listaLegociacoes.negociacoes.some(negociacaoExistente =>
+                                    JSON.stringify(negociacao) == JSON.stringify(negociacaoExistente))))
             .then(negociacoes =>
-                negociacoes
-                    .reduce((novoArray, array) => novoArray.concat(array), [])
-                    .forEach(negociacao => this._listaLegociacoes.adiciona(negociacao)))
+                negociacoes.forEach(negociacao => 
+                    this._listaLegociacoes.adiciona(negociacao)))
             .catch(erro => this._mensagem.texto = erro);
     }
 
