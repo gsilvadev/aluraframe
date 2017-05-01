@@ -16,15 +16,26 @@ class NegociacaoController {
             new Mensagem(),
             new MensagemView($("#mensagemView")),
             "texto");
+            this.listar();
     }
 
     adiciona(event) {
         event.preventDefault();
 
-        this._listaLegociacoes.adiciona(this._criaNegociacao());
-        this._mensagem.texto = "Negociação adicionada com sucesso!";
+        ConnectionFactory.getConnection()
+            .then(connection => {
+                let dao = new NegociacaoDao(connection);
 
-        this._limpaFormulario();
+                let negociacao = this._criaNegociacao();
+                dao.adiciona(negociacao)
+                    .then(() => {
+                        this._listaLegociacoes.adiciona(negociacao);
+                        this._mensagem.texto = "Negociação adicionada com sucesso!";
+                        this._limpaFormulario();
+                    })
+                    .catch(erro => this._mensagem.texto = erro);
+            })
+
         this._inputData.focus();
     }
 
@@ -44,8 +55,14 @@ class NegociacaoController {
     apaga(event) {
         event.preventDefault();
 
-        this._listaLegociacoes.esvazia();
-        this._mensagem.texto = "Negociações apagadas com sucesso!";
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.apagarTodos())
+            .then(msg => {
+                this._listaLegociacoes.esvazia();
+                this._mensagem.texto = msg;
+            })
+            .catch(erro => this._mensagem.texto = erro);
     }
 
     _criaNegociacao() {
@@ -67,5 +84,15 @@ class NegociacaoController {
             this._listaLegociacoes.ordena((a, b) => a[coluna] - b[coluna]);
         
         this._ordemAtual = coluna;
+    }
+
+    listar(){
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.listarTodos())
+            .then(negociacoes => 
+                negociacoes.forEach(negociacao => 
+                    this._listaLegociacoes.adiciona(negociacao)))
+            .catch(erro => this._mensagem.texto = erro);
     }
 }
