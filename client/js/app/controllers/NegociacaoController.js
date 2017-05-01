@@ -17,6 +17,12 @@ class NegociacaoController {
             new MensagemView($("#mensagemView")),
             "texto");
             this.listar();
+
+        this._init();
+    }
+
+    _init(){
+        this._obterNegociacoes();
     }
 
     adiciona(event) {
@@ -39,7 +45,7 @@ class NegociacaoController {
         this._inputData.focus();
     }
 
-    obterNegociacoes() {
+    _obterNegociacoes() {
         let negociacaoService = new NegociacaoService();
             negociacaoService.obterNegociacoes()
             .then(negociacoes => 
